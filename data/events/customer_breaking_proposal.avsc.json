@@ -1,0 +1,1 @@
+{"type":"record","name":"CustomerEvent","namespace":"lab.customer","fields":[{"name":"event_type","type":"int"},{"name":"event_time","type":"string"},{"name":"channel","type":"string","default":"unknown"}]}

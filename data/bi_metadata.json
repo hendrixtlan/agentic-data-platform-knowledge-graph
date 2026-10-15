@@ -1,0 +1,16 @@
+{
+  "dashboards": [
+    {
+      "name": "Customer Executive Dashboard",
+      "tool": "Power BI",
+      "owner": "BI Analytics",
+      "reads_from": ["gold.customer_360"]
+    },
+    {
+      "name": "Payment Risk Dashboard",
+      "tool": "Power BI",
+      "owner": "Risk Analytics",
+      "reads_from": ["gold.payment_risk"]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "topics": [
+    {
+      "name": "customer_events",
+      "schema": "CustomerEventV4",
+      "compatibility": "BACKWARD",
+      "owner": "Customer Platform"
+    },
+    {
+      "name": "payment_events",
+      "schema": "PaymentEventV2",
+      "compatibility": "FULL_TRANSITIVE",
+      "owner": "Payments Platform"
+    }
+  ]
+}

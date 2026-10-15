@@ -1,0 +1,10 @@
+{
+ "eventType":"COMPLETE",
+ "eventTime":"2026-10-14T18:00:00Z",
+ "producer":"https://github.com/OpenLineage/OpenLineage",
+ "schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent",
+ "job":{"namespace":"data-platform-lab","name":"CustomerStreaming"},
+ "run":{"runId":"4d6c54c7-c3d8-4cf0-81f4-8b63bf2f7d23"},
+ "inputs":[{"namespace":"kafka://lab","name":"customer_events"}],
+ "outputs":[{"namespace":"lakehouse://demo","name":"bronze.customer"}]
+}

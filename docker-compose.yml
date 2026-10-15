@@ -1,0 +1,96 @@
+name: agentic-kg-lab
+
+services:
+  neo4j:
+    image: neo4j:5.26.32
+    ports: ["127.0.0.1:7474:7474", "127.0.0.1:7687:7687"]
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-change-me-now}
+      NEO4J_server_memory_heap_initial__size: 512m
+      NEO4J_server_memory_heap_max__size: 1G
+      NEO4J_server_memory_pagecache_size: 512m
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p ${NEO4J_PASSWORD:-change-me-now} 'RETURN 1' >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 8s
+      retries: 18
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v26.2.4
+    command:
+      - redpanda
+      - start
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+      - --schema-registry-addr
+      - internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr
+      - redpanda:33145
+      - --advertise-rpc-addr
+      - redpanda:33145
+      - --mode
+      - dev-container
+      - --smp
+      - "1"
+      - --default-log-level=info
+    ports: ["127.0.0.1:19092:19092", "127.0.0.1:18081:18081"]
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster info -X brokers=localhost:9092 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 6s
+      retries: 24
+
+  console:
+    image: docker.redpanda.com/redpandadata/console:v3.12.0
+    profiles: ["ui"]
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:9092"]
+        schemaRegistry:
+          enabled: true
+          urls: ["http://redpanda:8081"]
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      redpanda:
+        condition: service_healthy
+
+  consumer:
+    build: .
+    profiles: ["app"]
+    command: ["kg-lab", "stream-consume"]
+    environment: &app_env
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-change-me-now}
+      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      SCHEMA_REGISTRY_URL: http://redpanda:8081
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api:
+    build: .
+    profiles: ["app"]
+    command: ["uvicorn", "kg_lab.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["127.0.0.1:8000:8000"]
+    environment: *app_env
+    depends_on:
+      neo4j:
+        condition: service_healthy
+
+volumes:
+  neo4j_data:
+  redpanda_data:

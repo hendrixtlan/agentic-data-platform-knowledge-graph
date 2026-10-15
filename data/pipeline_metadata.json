@@ -1,0 +1,18 @@
+{
+  "pipelines": [
+    {
+      "name": "CustomerStreaming",
+      "engine": "Spark Structured Streaming",
+      "owner": "Customer Platform",
+      "consumes": ["customer_events"],
+      "writes_to": ["bronze.customer"]
+    },
+    {
+      "name": "PaymentStreaming",
+      "engine": "Flink",
+      "owner": "Payments Platform",
+      "consumes": ["payment_events"],
+      "writes_to": ["bronze.payments"]
+    }
+  ]
+}

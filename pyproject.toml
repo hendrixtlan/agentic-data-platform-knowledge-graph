@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-data-platform-knowledge-graph"
+version = "0.2.0"
+description = "End-to-end Neo4j Knowledge Graph + RAG + LangGraph lab for data platform lineage and impact analysis."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Project Author"}]
+dependencies = [
+  "neo4j>=6.0,<7",
+  "langgraph==1.2.15",
+  "pydantic>=2.10,<3",
+  "pydantic-settings>=2.7,<3",
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.32,<1",
+  "typer>=0.15,<1",
+  "python-dotenv>=1.0,<2",
+]
+
+[project.optional-dependencies]
+llm = ["langchain-openai==1.7.2"]
+graphrag = ["neo4j-graphrag==1.22.0", "langchain-openai==1.7.2"]
+stream = ["confluent-kafka>=2.5,<3"]
+dev = ["pytest>=8.3,<10", "pytest-cov>=6,<7", "ruff>=0.8,<1", "httpx>=0.28,<1"]
+
+[project.scripts]
+kg-lab = "kg_lab.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+markers = ["integration: requires a running Neo4j instance"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

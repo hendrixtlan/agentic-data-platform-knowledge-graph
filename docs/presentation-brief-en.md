@@ -1,0 +1,11 @@
+# Presentation brief — Data Platform Knowledge Graph (v0.2)
+
+**One-minute pitch.** We are building an operational Knowledge Graph of a data platform, not a chatbot over disconnected documents. Structured metadata from Schema Registry, Kafka, OpenLineage and dbt is normalized into a graph of schema subjects, versions, pipelines and datasets. Changes travel through Kafka, and a consumer projects them into Neo4j using atomic, idempotent transactions. Neo4j exposes the dependency chain and change-impact radius, while the document index supplies architecture rationale. LangGraph orchestrates which source of evidence to retrieve before synthesizing an answer. The demonstrator traces `customer_events` into a streaming pipeline, bronze table, dbt model, gold table and Power BI dashboard.
+
+**Why graph rather than vector alone?** Similarity search helps identify relevant ADRs and runbooks; graph traversal answers multi-hop, structured questions about dependencies, ownership and lineage. The system benefits from both and does not confuse one with the other.
+
+**Why Kafka and OpenLineage?** Kafka decouples source adapters from graph projection and makes replay/backpressure possible. OpenLineage provides a standard contract for runtime job and dataset lineage. Schema Registry provides actual accepted schema versions and compatibility tests. A schema version observation is different from a proposed change that might be rejected.
+
+**Failure contract.** The consumer commits Kafka offsets only after the Neo4j projection succeeds; duplicate envelopes are ignored based on their event IDs. Bad envelopes are sent to a DLQ, whereas database errors halt the consumer so they can be replayed. We accurately call this an at-least-once pipeline with exactly-once *graph effects per event ID*, rather than a distributed exactly-once transaction.
+
+**Honest scope.** Real local Kafka-compatible broker and Registry REST calls; synthetic OpenLineage, dbt and BI data; local hash-embedding document index; optional LLM synthesis. It is a defensible integration lab, not a production-ready multi-tenant service. The next improvement is authorization-aware GraphRAG with observability and quality evaluation.

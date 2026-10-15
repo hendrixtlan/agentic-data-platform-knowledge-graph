@@ -1,0 +1,9 @@
+{
+ "metadata":{"dbt_schema_version":"https://schemas.getdbt.com/dbt/manifest/v12.json"},
+ "nodes":{
+   "model.demo.customer_360":{"resource_type":"model","name":"customer_360","schema":"gold","alias":"customer_360","relation_name":"gold.customer_360","depends_on":{"nodes":["source.demo.customer"]}}
+ },
+ "sources":{
+   "source.demo.customer":{"resource_type":"source","name":"customer","schema":"bronze","relation_name":"bronze.customer"}
+ }
+}

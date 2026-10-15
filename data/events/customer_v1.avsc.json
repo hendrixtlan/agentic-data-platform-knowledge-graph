@@ -1,0 +1,1 @@
+{"type":"record","name":"CustomerEvent","namespace":"lab.customer","fields":[{"name":"customer_id","type":"string"},{"name":"event_type","type":"string"},{"name":"event_time","type":"string"}]}

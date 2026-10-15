@@ -1,0 +1,16 @@
+{
+  "models": [
+    {
+      "name": "customer_360",
+      "owner": "Customer Intelligence",
+      "reads_from": ["bronze.customer"],
+      "produces": ["gold.customer_360"]
+    },
+    {
+      "name": "payment_risk",
+      "owner": "Risk Analytics",
+      "reads_from": ["bronze.payments"],
+      "produces": ["gold.payment_risk"]
+    }
+  ]
+}
